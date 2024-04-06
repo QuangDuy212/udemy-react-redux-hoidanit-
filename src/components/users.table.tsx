@@ -1,6 +1,8 @@
 
 import { useEffect, useState } from 'react';
 import Table from 'react-bootstrap/Table';
+import { useAppDispatch } from '../redux/hook';
+import { fetchListUsers } from '../redux/user/user.slide';
 
 interface IUser {
     id: number;
@@ -11,15 +13,21 @@ interface IUser {
 const UsersTable = () => {
     const [users, setUsers] = useState<IUser[]>([]);
 
-    const fetchUsers = async () => {
-        const res = await fetch("http://localhost:8000/users");
-        const data = await res.json();
-        setUsers(data);
+    // const fetchUsers = async () => {
+    //     const res = await fetch("http://localhost:8000/users");
+    //     const data = await res.json();
+    //     setUsers(data);
 
-    }
+    // }
+    // useEffect(() => {
+
+    //     fetchUsers();
+    // }, [])
+
+    const dispatch = useAppDispatch();
+
     useEffect(() => {
-
-        fetchUsers();
+        dispatch(fetchListUsers());
     }, [])
 
     return (
