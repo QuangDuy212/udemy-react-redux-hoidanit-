@@ -7,19 +7,55 @@ import { toast } from 'react-toastify';
 import Button from 'react-bootstrap/Button';
 import './users.table.scss';
 import UserCreateModal from './modal/user.create.modal';
+import UserEditModal from './modal/user.edit.modal';
+import UserDeleteModal from './modal/user.delete.modal';
 
+interface IUser {
+    name: string,
+    email: string,
+    id: string
+}
 
 const UsersTable = () => {
-
+    // LIBRARY:
     const dispatch = useAppDispatch();
+
+    // REDUX:
     const users = useAppSelector(state => state.user.listUsers);
+
+    // STATE: 
     const [isOpenCreateModal, setIsOpenCreateModal] = useState(false);
+    const [isOpenEditModal, setIsOpenEditModal] = useState(false);
+    const [isOpenDeleteModal, setIsOpenDeleteModal] = useState(false);
 
-
+    const [dataUpdate, setDataUpdate] = useState({});
+    const [dataDelete, setDataDelete] = useState({});
+    // FUNCTION: 
     useEffect(() => {
         dispatch(fetchListUsers());
         toast('🦄 Wow so easy!');
-    }, [])
+    }, []);
+
+    // update data:
+    const handleBtnUpdate = (user: IUser) => {
+        setIsOpenEditModal(true);
+        setDataUpdate(user);
+    }
+
+    const handleCloseUpdateModal = () => {
+        setIsOpenEditModal(false);
+        setDataUpdate({});
+    }
+
+    // delete user: 
+    const hanldeBtnDelete = (user: IUser) => {
+        setIsOpenDeleteModal(true);
+        setDataDelete(user);
+    }
+    const handleCloseDeleteModal = () => {
+        setIsOpenDeleteModal(false);
+        setDataDelete("");
+    }
 
     return (
         <>
@@ -59,14 +95,17 @@ const UsersTable = () => {
                                         <Button
                                             variant="warning"
                                             className='table-user__body--btn'
+                                            onClick={() => { handleBtnUpdate(user) }}
                                         >Edit</Button>
                                         <Button
                                             variant="danger"
                                             className='table-user__body--btn'
+                                            onClick={() => { hanldeBtnDelete(user) }}
                                         >Delete</Button>
                                     </td>
                                 </tr>
                             )
+
                         })}
 
                     </tbody>
@@ -77,8 +116,20 @@ const UsersTable = () => {
 
             <UserCreateModal
                 show={isOpenCreateModal}
-                setIsOpenCreateModal={setIsOpenCreateModal}
                 onHide={() => setIsOpenCreateModal(false)}
+                setIsOpenCreateModal={setIsOpenCreateModal}
+            />
+            <UserEditModal
+                isOpenEditModal={isOpenEditModal}
+                onHide={() => handleCloseUpdateModal()}
+                setIsOpenEditModal={setIsOpenEditModal}
+                dataUpdate={dataUpdate}
+            />
+            <UserDeleteModal
+                isOpenDeleteModal={isOpenDeleteModal}
+                onHide={() => handleCloseDeleteModal()}
+                setIsOpenDeleteModal={setIsOpenDeleteModal}
+                dataDelete={dataDelete}
             />
         </>
     );

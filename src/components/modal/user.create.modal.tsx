@@ -10,7 +10,7 @@ import { createNewUser, resetCreate } from '../../redux/user/user.slide';
 const UserCreateModal = (props) => {
 
   // PROPS:
-  const { isOpenCreateModal, setIsOpenCreateModal } = props;
+  const { setIsOpenCreateModal } = props;
   // LIBRARY:
   const dispatch = useAppDispatch();
 
@@ -42,7 +42,6 @@ const UserCreateModal = (props) => {
       toast.error("Name is invalid");
       return;
     }
-    console.log(">>> check create: ", { email, name })
     dispatch(createNewUser({ email, name }));
   }
   return (

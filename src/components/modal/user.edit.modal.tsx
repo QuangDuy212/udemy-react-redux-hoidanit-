@@ -2,71 +2,94 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../../redux/hook';
+import { updateUser, resetUpdate } from '../../redux/user/user.slide';
 import { toast } from 'react-toastify';
 
-const UserEditModal = (props) => {
-    // STATE:
+const UserEditModal = (props: any) => {
+    const { isOpenEditModal, setIsOpenEditModal, dataUpdate } = props;
+
+    const dispatch = useAppDispatch();
+    const isUpdateSuccess = useAppSelector(state => state.user.isUpdateSuccess)
+
+    const [id, setId] = useState();
     const [email, setEmail] = useState<string>("");
     const [name, setName] = useState<string>("");
 
-    // FUNCTION:
+    useEffect(() => {
+        if (dataUpdate?.id) {
+            setId(dataUpdate?.id);
+            setEmail(dataUpdate?.email);
+            setName(dataUpdate?.name)
+        }
+    }, [dataUpdate])
+
+    useEffect(() => {
+        if (isUpdateSuccess === true) {
+            setIsOpenEditModal(false);
+            setEmail("");
+            setName("");
+            toast('🦄 Wow so easy! Update succeed');
+            //reset redux
+            dispatch(resetUpdate())
+        }
+    }, [isUpdateSuccess])
+
     const handleSubmit = () => {
         if (!email) {
-            toast.error("Email is invalid");
+            alert("email empty");
             return;
         }
         if (!name) {
-            toast.error("Name is invalid");
+            alert("name empty");
             return;
         }
-        console.log(">>> check create: ", { email, name })
+        dispatch(updateUser({ email, name, id }))
     }
+
     return (
-        <Modal
-            {...props}
-            size="lg"
-            aria-labelledby="contained-modal-title-vcenter"
-            centered
-        >
-            <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter">
-                    ADD A NEW USER
-                </Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <FloatingLabel
-                    controlId="floatingInput"
-                    label="Email address"
-                    className="mb-3"
-                >
-                    <Form.Control
-                        type="email"
-                        placeholder="name@example.com"
-                        onChange={(event) => setEmail(event.target.value)}
-                    />
-                </FloatingLabel>
-                <FloatingLabel
-                    controlId="floatingPassword"
-                    label="Name"
-                >
-                    <Form.Control
-                        type="text"
-                        placeholder="Name"
-                        onChange={(event) => setName(event.target.value)}
-                    />
-                </FloatingLabel>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant='warning'
-                    onClick={props.onHide}
-                >Cancel</Button>
-                <Button
-                    onClick={() => { handleSubmit() }}
-                >Add</Button>
-            </Modal.Footer>
-        </Modal>
-    );
+        <>
+            <Modal
+                show={isOpenEditModal}
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                backdrop={false}
+                onHide={() => props.onHide()}
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>
+                        Update A User
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <FloatingLabel
+                        label="Email"
+                        className="mb-3"
+                    >
+                        <Form.Control
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            type="text"
+                        />
+                    </FloatingLabel>
+                    <FloatingLabel label="Name">
+                        <Form.Control
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            type="text"
+                        />
+                    </FloatingLabel>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button
+                        variant='warning'
+                        onClick={() => setIsOpenEditModal(false)} className='mr-2'>Cancel</Button>
+                    <Button onClick={() => handleSubmit()}>Confirm</Button>
+                </Modal.Footer>
+            </Modal>
+        </>
+    )
 }
 
 export default UserEditModal;
