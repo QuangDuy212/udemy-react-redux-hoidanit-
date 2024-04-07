@@ -2,20 +2,37 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useAppDispatch } from '../../redux/hook';
-import { createNewUser } from '../../redux/user/user.slide';
+import { useAppDispatch, useAppSelector } from '../../redux/hook';
+import { createNewUser, resetCreate } from '../../redux/user/user.slide';
 
 const UserCreateModal = (props) => {
 
+  // PROPS:
+  const { isOpenCreateModal, setIsOpenCreateModal } = props;
+  // LIBRARY:
   const dispatch = useAppDispatch();
 
   // STATE:
   const [email, setEmail] = useState<string>("");
   const [name, setName] = useState<string>("");
 
+  // REDUX: 
+  const isCreateSuccess = useAppSelector(state => state.user.isCreateSuccess);
   // FUNCTION:
+
+  useEffect(() => {
+    if (isCreateSuccess === true) {
+      setIsOpenCreateModal(false);
+      setEmail("");
+      setName("");
+      toast('🦄 Wow so easy! Create Succeed');
+      //reset redux:
+      dispatch(resetCreate());
+    }
+  }, [isCreateSuccess])
+
   const handleSubmit = () => {
     if (!email) {
       toast.error("Email is invalid");

@@ -77,6 +77,7 @@ const UsersTable = () => {
 
             <UserCreateModal
                 show={isOpenCreateModal}
+                setIsOpenCreateModal={setIsOpenCreateModal}
                 onHide={() => setIsOpenCreateModal(false)}
             />
         </>
