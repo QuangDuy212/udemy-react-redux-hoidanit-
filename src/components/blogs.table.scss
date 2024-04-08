@@ -1,0 +1,20 @@
+.table-blog {
+    &__header {
+        margin: 20px 0;
+
+        &--title {
+            font-size  : 20px;
+            font-weight: 600;
+        }
+
+        &--btn {
+            float: right;
+        }
+    }
+
+    &__body {
+        &--btn {
+            margin: 10px 10px;
+        }
+    }
+}
